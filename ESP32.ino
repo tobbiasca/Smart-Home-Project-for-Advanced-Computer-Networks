@@ -5,6 +5,8 @@
 #include <WiFi.h>
 #include <BlynkSimpleEsp32.h>
 
+#define BLYNK_TEMPLATE_ID "TMPL27PezZL51" 
+#define BLYNK_TEMPLATE_NAME "Code"
 #define BLYNK_PRINT Serial
 
 // ------------------------------------
