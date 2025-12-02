@@ -22,6 +22,7 @@ BlynkTimer timer;
 int autoMode = 0;   // V10
 int acState = 0;    // V7
 int tempMode = 0;   // V9
+int state = 0;
 
 float COLD_THRESHOLD = 23.0;
 float HOT_THRESHOLD  = 27.0;
@@ -94,7 +95,8 @@ void updateTempMode(int mode) {
 
 void updateJoystickOutput() {
     // write joystick value (0-255) to DAC pin 25
-    dacWrite(JOY_DAC_PIN, joystickValue);
+    if (state == 1) dacWrite(JOY_DAC_PIN, joystickValue);
+    else dacWrite(JOY_DAC_PIN, 0);
 }
 
 
@@ -102,6 +104,7 @@ void readJoystick() {
     unsigned long now = millis();
     int y = analogRead(JOY_Y_PIN);
 
+    if (state == 0) return;
     if (now - lastJoyMove >= JOY_INTERVAL) {
         if (y > JOY_DEADZONE_UP) joystickValue += JOY_STEP;
         else if (y < JOY_DEADZONE_DOWN) joystickValue -= JOY_STEP;
@@ -120,22 +123,29 @@ void readJoystick() {
 
 
 void readLightSensor() { 
-    Blynk.virtualWrite(V3, analogRead(lightPin)); 
+    Blynk.virtualWrite(V3, analogRead(lightPin));
 }
 
 void readLaserSensor() { 
-    Blynk.virtualWrite(V8, analogRead(laserPin) < 20 ? 1 : 0); 
+    if (state == 0)
+        Blynk.virtualWrite(V8, analogRead(laserPin) < 200 ? 1 : 0); 
 }
 
 void readFlameSensor() { 
     int value = analogRead(flamePin);
     Blynk.virtualWrite(V1, value);
-    if (value < 150) {Blynk.virtualWrite(V6, 1), digitalWrite(23, 1);}
+    if (value < 1000) {Blynk.virtualWrite(V6, 1), digitalWrite(23, 1);}
 }
 
 void readPinD34() {
-  int state = digitalRead(LOCK);
-  Blynk.virtualWrite(V0, state);
+    state = digitalRead(LOCK);
+    if (state == 0)  {
+        Blynk.virtualWrite(V7, 0);
+        dacWrite(JOY_DAC_PIN, 0);
+        digitalWrite(AC_COLD_PIN, LOW);
+        digitalWrite(AC_HOT_PIN, LOW);
+    }
+    Blynk.virtualWrite(V0, state);
 }
 
 void readDHT() {
