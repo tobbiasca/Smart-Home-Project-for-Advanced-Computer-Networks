@@ -24,16 +24,16 @@ bool buzzerState = false;
 const int buzzerInterval = 200;   // 200 ms blink interval
 
 // --- PASSWORD / KEYPAD ---
-const String PASSWORD = "1237";    // your password
+const String PASSWORD = "1111";    // your password
 String inputCode = "";
 
 // Define keypad layout
 const byte ROWS = 3;
 const byte COLS = 3;
 char keys[ROWS][COLS] = {
-  {'1','2','3'},
-  {'4','5','6'},
-  {'7','8','9'}
+  {'9','6','3'},
+  {'4','5','2'},
+  {'7','4','1'}
 };
 byte rowPins[ROWS] = {0, 1, 2};  // D0, D1, D2
 byte colPins[COLS] = {3, 4, 5};  // D3, D4, D5
