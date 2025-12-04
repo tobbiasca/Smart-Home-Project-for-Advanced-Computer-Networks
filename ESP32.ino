@@ -128,13 +128,14 @@ void readLightSensor() {
 
 void readLaserSensor() { 
     if (state == 0)
-        Blynk.virtualWrite(V8, analogRead(laserPin) < 200 ? 1 : 0); 
+        Blynk.virtualWrite(V8, analogRead(laserPin) < 200 ? 0 : 1); 
+        if(analogRead(laserPin) < 200) Blynk.logEvent("intruder");
 }
 
 void readFlameSensor() { 
     int value = analogRead(flamePin);
     Blynk.virtualWrite(V1, value);
-    if (value < 1000) {Blynk.virtualWrite(V6, 1), digitalWrite(23, 1);}
+    if (value < 1000) {Blynk.virtualWrite(V6, 1), digitalWrite(23, 1); Blynk.logEvent("fire_alarm");}
 }
 
 void readPinD34() {
@@ -202,7 +203,7 @@ BLYNK_WRITE(V7) {
 
 BLYNK_WRITE(V9) {
     tempMode = param.asInt();
-    Serial.print("Temp mode (V9): ");
+    Serial.print("mode (V9): ");
     Serial.println(tempMode);
     updateACpins();
 }
